@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Products - ShopSphere</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <a href="index.html"><img src="images/logo.png" width="125px"></a>
+                </div>
+                <nav>
+                    <ul id="MenuItems">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="account.html">Account</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </nav>
+                <a href="cart.html"><img src="images/cart.png" width="30px" height="30px"></a>
+                <img src="images/menu.png" class="menu-icon" onClick="menutoggle()">
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Items Details -->
+    <div class="small-container cart-page">
+        <table>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+            </tr>
+        </table>
+
+        <div class="total-price">
+            <table>
+                <tr>
+                    <td>Subtotal</td>
+                    <td id="subtotal">$0.00</td>
+                </tr>
+                <tr>
+                    <td>Tax</td>
+                    <td id="tax">$0.00</td>
+                </tr>
+                <tr>
+                    <td>Total</td>
+                    <td id="total">$0.00</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col-1">
+                    <h3>Download Our App</h3>
+                    <p>Download App for Android and iOS mobile phone.</p>
+                    <div class="app-logo">
+                        <img src="images/play-store.png" alt="">
+                        <img src="images/app-store.png" alt="">
+                    </div>
+                </div>
+                <div class="footer-col-2">
+                    <img src="images/logo.png">
+                </div>
+                <div class="footer-col-3">
+                    <h3>Useful Links</h3>
+                    <ul>
+                        <li>Coupons</li>
+                        <li>Blog Post</li>
+                        <li>Return Policy</li>
+                        <li>Join Affiliate</li>
+                    </ul>
+                </div>
+                <div class="footer-col-4">
+                    <h3>Follow us</h3>
+                    <ul>
+                        <li>Facebook</li>
+                        <li>Twitter</li>
+                        <li>Instagram</li>
+                        <li>Youtube</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <p class="copyright">Copyright</p>
+        </div>
+    </div>
+
+    <!-- Your JavaScript for menu toggle and cart functionality -->
+    <script>
+        // Sample cart data (you can replace this with data from localStorage or server)
+        var cart = [
+            { name: "Jordan 1", price: 120.00, quantity: 1, image: "product-11.jpg" },
+            { name: "Jordan 4", price: 160.00, quantity: 1, image: "product-2.jpg" },
+            { name: "Air Force 1", price: 125.00, quantity: 1, image: "af1.jpg" }
+            // Add more items as needed
+        ];
+
+        // Initialize cart and calculate totals
+        updateCart();
+
+        function menutoggle() {
+            var menuItems = document.getElementById("MenuItems");
+            if (menuItems.style.maxHeight == "0px") {
+                menuItems.style.maxHeight = "200px";
+            } else {
+                menuItems.style.maxHeight = "0px";
+            }
+        }
+
+        function updateCart() {
+            var subtotal = 0;
+            var table = document.querySelector("table");
+
+            for (var i = 0; i < cart.length; i++) {
+                var item = cart[i];
+                subtotal += item.price * item.quantity;
+
+                // Check if the row already exists
+                var existingRow = table.rows[i + 1]; // Add 1 to account for the header row
+                if (existingRow) {
+                    // Update existing row
+                    existingRow.cells[0].innerHTML = `<td><div class="cart-info"><img src="images/${item.image}"><div><p>${item.name}</p><small>Price: $${item.price.toFixed(2)}</small><br><a href="#" onclick="removeItem(${i})">Remove</a></div></div></td>`;
+                    existingRow.cells[1].innerHTML = `<td><input type="number" value="${item.quantity}" onchange="updateQuantity(${i}, this.value)"></td>`;
+                    existingRow.cells[2].innerHTML = `<td>$${(item.price * item.quantity).toFixed(2)}</td>`;
+                } else {
+                    // Append new row
+                    var newRow = table.insertRow(-1);
+                    newRow.innerHTML = `<tr><td><div class="cart-info"><img src="images/${item.image}"><div><p>${item.name}</p><small>Price: $${item.price.toFixed(2)}</small><br><a href="#" onclick="removeItem(${i})">Remove</a></div></div></td><td><input type="number" value="${item.quantity}" onchange="updateQuantity(${i}, this.value)"></td><td>$${(item.price * item.quantity).toFixed(2)}</td></tr>`;
+                }
+            }
+
+            // Update totals
+            var tax = subtotal * 0.175; // Assume 17.5% tax
+            var total = subtotal + tax;
+
+            document.getElementById("subtotal").innerHTML = `$${subtotal.toFixed(2)}`;
+            document.getElementById("tax").innerHTML = `$${tax.toFixed(2)}`;
+            document.getElementById("total").innerHTML = `$${total.toFixed(2)}`;
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            resetTable();
+            updateCart();
+        }
+
+        function updateQuantity(index, newQuantity) {
+            cart[index].quantity = parseInt(newQuantity);
+            resetTable();
+            updateCart();
+        }
+
+        function resetTable() {
+            var table = document.querySelector("table");
+            table.innerHTML = "<tr><th>Product</th><th>Quantity</th><th>Subtotal</th></tr>";
+        }
+    </script>
+</body>
+</html>
